@@ -1,4 +1,5 @@
 # 🌮 El Taco Maker
+![La cuina amb el Dr. Mallén](https://i.ibb.co/C5vvr9s/5a383d73a8cd5-image.jpg)
 Eina per crear ground truth de tracklimits. Crea una base de dades amb tracklimits fets per humans per després provar els teus algorismes. Ándele!
 
 Requeriments:
