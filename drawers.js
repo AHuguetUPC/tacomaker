@@ -41,6 +41,14 @@ function toggleMode() {
         document.getElementById('mode').innerText = "Grocs (dreta)";
         document.getElementById('mode').style.backgroundColor = "yellow";
         document.getElementById('mode').style.color = "black";
+    } else if (noiseYellow) {
+        document.getElementById('mode').innerText = "Grocs (soroll)";
+        document.getElementById('mode').style.backgroundColor = "yellow";
+        document.getElementById('mode').style.color = "black";
+    } else if (noiseBlue) {
+        document.getElementById('mode').innerText = "Blaus (soroll)";
+        document.getElementById('mode').style.backgroundColor = "blue";
+        document.getElementById('mode').style.color = "white";
     } else {
         document.getElementById('mode').innerText = "Translation";
         document.getElementById('mode').style.color = "black";
@@ -64,7 +72,30 @@ var yellowpathPoints = [];
 var blueloopClosed = false;
 var yellowloopClosed = false;
 
+var bluenoisePoints = [];
+var yellownoisePoints = [];
+
 ctx2.globalCompositeOperation='destination-over';
+
+function drawNoisepoints(noisepoints, color) {
+    for (var i = 0; i < noisepoints.length; ++i) {
+        var pp = noisepoints[i];
+
+        // Circle
+        ctx2.beginPath();
+        ctx2.moveTo(pp.x, pp.y);
+        ctx2.arc(pp.x, pp.y, 5, 0, 2 * Math.PI, false);
+        ctx2.fillStyle = color ? 'orange' : 'blue';
+        ctx2.fill();
+        ctx2.closePath();
+
+        ctx2.beginPath();
+        ctx2.strokeStyle = 'black';  
+        ctx2.arc(pp.x, pp.y, 5, 0, 2 * Math.PI, false);
+        ctx2.stroke();
+        ctx2.closePath();
+    }
+}
 
 function drawPathpoints(pathpoints, color) {
     // Path
@@ -184,6 +215,8 @@ function draw() {
 
     var bluepathpoints = [];
     var yellowpathpoints = [];
+    var bluenoisepoints = [];
+    var yellownoisepoints = [];
 
     // Consider path points
     for (var i = 0; i < bluepathPoints.length; ++i) {
@@ -206,6 +239,26 @@ function draw() {
         } catch {}
     }
 
+    for (var i = 0; i < yellownoisePoints.length; ++i) {
+        try {
+            yellownoisepoints.push({
+                x: scrollvalue*yellownoisePoints[i][0],
+                y: scrollvalue*yellownoisePoints[i][1],
+                id: i
+            });
+        } catch {}
+    }
+
+    for (var i = 0; i < bluenoisePoints.length; ++i) {
+        try {
+            bluenoisepoints.push({
+                x: scrollvalue*bluenoisePoints[i][0],
+                y: scrollvalue*bluenoisePoints[i][1],
+                id: i
+            });
+        } catch {}
+    }
+
     // clear canvas
     clear();
     
@@ -218,6 +271,10 @@ function draw() {
     // Draw tracklimits
     drawPathpoints(bluepathpoints, false);
     drawPathpoints(yellowpathpoints, true);
+
+    // Draw tracklimits
+    drawNoisepoints(bluenoisepoints, false);
+    drawNoisepoints(yellownoisepoints, true);
 
     // Draw car
     drawCar();

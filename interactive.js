@@ -3,6 +3,9 @@ var ctx2 = canvas.getContext('2d');
 
 draw();
 
+var noiseYellow = false;
+var noiseBlue = false;
+
 var mouseDown = false;
 var antPos = [];
 
@@ -20,6 +23,10 @@ function downloadTLs(filename) {
     for (var i = 0; i < yellowpathPoints.length; ++i) text += yellowpathPoints[i][0] + " " + -yellowpathPoints[i][1] + " ";
     text += "\n";
     for (var i = 0; i < bluepathPoints.length; ++i) text += bluepathPoints[i][0] + " " + -bluepathPoints[i][1] + " ";
+    text += "\n";
+    for (var i = 0; i < yellownoisePoints.length; ++i) text += yellownoisePoints[i][0] + " " + -yellownoisePoints[i][1] + " ";
+    text += "\n";
+    for (var i = 0; i < bluenoisePoints.length; ++i) text += bluenoisePoints[i][0] + " " + -bluenoisePoints[i][1] + " ";
 
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -45,6 +52,7 @@ document.getElementById("info").onclick = function () {
     text += "\n";
     text += "𝗦𝗵𝗶𝗳𝘁: Crear tracklimit groc." + "\n";
     text += "𝗖𝗼𝗻𝘁𝗿𝗼𝗹: Crear tracklimit blau." + "\n";
+    text += "Tecla '𝗦': Crear soroll. Picar dos cops per canviar de color." + "\n";
     text += "𝗘𝘀𝗰𝗮𝗽𝗲: Mode de translació. Arrosega el ratolí i fes zoom amb la rodeta." + "\n";
     text += "\n";
     text += "- Aparaixerà una 𝗰𝗶𝗿𝗰𝘂𝗺𝗳𝗲𝗿𝗲̀𝗻𝗰𝗶𝗮 de radi 5(m) que marca el límit normatiu de distància entre cons." + "\n";
@@ -102,6 +110,10 @@ document.body.onmousedown = function(e) {
         }
     } else if (shiftDown && yellowpathPoints.length == 0) {
         yellowpathPoints.push(movedPoint);
+    } else if (noiseYellow) {
+        yellownoisePoints.push(movedPoint);
+    } else if (noiseBlue) {
+        bluenoisePoints.push(movedPoint);
     }
 }
 
@@ -114,19 +126,40 @@ document.addEventListener("keydown", function(e) {
         console.log("control down");
         if (!controlDown) shiftDown = false;
         controlDown = !controlDown;
+        noiseYellow = false;
+        noiseBlue = false;
     } else if (e.shiftKey) {
         console.log("shift down");
         if (!shiftDown) controlDown = false;
         shiftDown = !shiftDown;
+        noiseYellow = false;
+        noiseBlue = false;
     } else if (e.code == "Space" || e.code == "Escape") {
         controlDown = false;
         shiftDown = false;
+        noiseYellow = false;
+        noiseBlue = false;
     } else if (e.code == "Enter") {
         var timestamp = Math.round(+new Date()/1000).toString(); 
         downloadTLs(timestamp + ".tls");
         // reloadPage();
     } else if (e.code == "KeyR") {
         reloadPage();
+    } else if (e.code == "KeyS" && !noiseYellow && !noiseBlue) {
+        controlDown = false;
+        shiftDown = false;
+        noiseYellow = true;
+        noiseBlue = false;
+    } else if (e.code == "KeyS" && noiseYellow) {
+        controlDown = false;
+        shiftDown = false;
+        noiseYellow = false;
+        noiseBlue = true;
+    } else if (e.code == "KeyS" && noiseBlue) {
+        controlDown = false;
+        shiftDown = false;
+        noiseYellow = false;
+        noiseBlue = false;
     }
     
     if (controlDown && bluepathPoints.length > 0 && e.code == "Backspace") {
@@ -137,7 +170,10 @@ document.addEventListener("keydown", function(e) {
         yellowpathPoints.pop();
         if (yellowpathPoints[yellowpathPoints.length-1] == yellowpathPoints[0]) yellowloopClosed = true;
         else yellowloopClosed = false;
-    } 
+    }
+
+    if (noiseBlue && bluenoisePoints.length > 0 && e.code == "Backspace") bluenoisePoints.pop();
+    if (noiseYellow && yellownoisePoints.length > 0 && e.code == "Backspace") yellownoisePoints.pop();
 });
 
 document.body.addEventListener('wheel', function(e) {
