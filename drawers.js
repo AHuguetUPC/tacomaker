@@ -75,6 +75,10 @@ var yellowloopClosed = false;
 var bluenoisePoints = [];
 var yellownoisePoints = [];
 
+var hiddenOnlyColor = false;
+var hiddenAll = false;
+var hidden = hiddenOnlyColor || hiddenAll;
+
 ctx2.globalCompositeOperation='destination-over';
 
 function drawNoisepoints(noisepoints, color) {
@@ -86,13 +90,14 @@ function drawNoisepoints(noisepoints, color) {
         ctx2.moveTo(pp.x, pp.y);
         ctx2.arc(pp.x, pp.y, 5, 0, 2 * Math.PI, false);
         ctx2.fillStyle = color ? 'orange' : 'blue';
+        if (hiddenAll) ctx2.fillStyle = 'black';
         ctx2.fill();
         ctx2.closePath();
 
         ctx2.beginPath();
         ctx2.strokeStyle = 'black';  
         ctx2.arc(pp.x, pp.y, 5, 0, 2 * Math.PI, false);
-        ctx2.stroke();
+        if (!hidden) ctx2.stroke();
         ctx2.closePath();
     }
 }
@@ -104,6 +109,7 @@ function drawPathpoints(pathpoints, color) {
         ctx2.moveTo(pathpoints[0].x, pathpoints[0].y);
         ctx2.arc(pathpoints[0].x, pathpoints[0].y, 5, 0, 2 * Math.PI, false);
         ctx2.fillStyle = color ? 'orange' : 'blue';
+        if (hiddenAll) ctx2.fillStyle = 'black';
         ctx2.fill();
         ctx2.closePath();
     }
@@ -119,7 +125,7 @@ function drawPathpoints(pathpoints, color) {
             ctx2.strokeStyle = color ? 'orange' : 'blue';    
             ctx2.lineTo(ant_pp.x, ant_pp.y);
             ctx2.lineTo(pp.x, pp.y);
-            ctx2.stroke();
+            if (!hidden) ctx2.stroke();
             ctx2.closePath();
 
             // Circle
@@ -127,6 +133,7 @@ function drawPathpoints(pathpoints, color) {
             ctx2.moveTo(pp.x, pp.y);
             ctx2.arc(pp.x, pp.y, 5, 0, 2 * Math.PI, false);
             ctx2.fillStyle = color ? 'orange' : 'blue';
+            if (hiddenAll) ctx2.fillStyle = 'black';
             ctx2.fill();
             ctx2.closePath();
         }
@@ -148,7 +155,7 @@ function drawPathpoints(pathpoints, color) {
         ctx2.lineWidth = 3;
         ctx2.strokeStyle = color ? 'orange' : 'blue';
         ctx2.arc(pp.x, pp.y, 5*scrollvalue, 0, 2 * Math.PI, false);
-        ctx2.stroke();
+        if (!hidden) ctx2.stroke();
         ctx2.closePath();
     }
 
@@ -156,7 +163,7 @@ function drawPathpoints(pathpoints, color) {
     for (var i = 0; i < pathpoints.length; ++i) {
         var pp = pathpoints[i];
         ctx2.font = "11px Arial";
-        ctx2.fillText((i+1).toString(), pp.x - 10, pp.y - 10);
+        if (!hidden) ctx2.fillText((i+1).toString(), pp.x - 10, pp.y - 10);
     }
 }
 
@@ -265,14 +272,16 @@ function draw() {
     ctx2.translate(movedPos[0], movedPos[1]);
  
     // Draw prohibitions
-    drawProhibitions(bluepathpoints, false);
-    drawProhibitions(yellowpathpoints, true);
+    if (!hidden) {
+        drawProhibitions(bluepathpoints, false);
+        drawProhibitions(yellowpathpoints, true);
+    }
 
     // Draw tracklimits
     drawPathpoints(bluepathpoints, false);
     drawPathpoints(yellowpathpoints, true);
 
-    // Draw tracklimits
+    // Draw noise
     drawNoisepoints(bluenoisepoints, false);
     drawNoisepoints(yellownoisepoints, true);
 

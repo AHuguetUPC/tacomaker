@@ -53,6 +53,7 @@ document.getElementById("info").onclick = function () {
     text += "𝗦𝗵𝗶𝗳𝘁: Crear tracklimit groc." + "\n";
     text += "𝗖𝗼𝗻𝘁𝗿𝗼𝗹: Crear tracklimit blau." + "\n";
     text += "Tecla '𝗦': Crear soroll. Picar dos cops per canviar de color." + "\n";
+    text += "Tecla '𝗛': Amagar l'estructura. Dos cops per amagar color." + "\n";
     text += "𝗘𝘀𝗰𝗮𝗽𝗲: Mode de translació. Arrosega el ratolí i fes zoom amb la rodeta." + "\n";
     text += "\n";
     text += "- Aparaixerà una 𝗰𝗶𝗿𝗰𝘂𝗺𝗳𝗲𝗿𝗲̀𝗻𝗰𝗶𝗮 de radi 5(m) que marca el límit normatiu de distància entre cons." + "\n";
@@ -68,11 +69,15 @@ document.getElementById("info").onclick = function () {
     console.log(text);
 }
 
+function cameraMove2Pos(posX, posY) {
+    deltaPos = [(antPos[0]-posX)/sensitivity, (antPos[1]-posY)/sensitivity];
+    movedPos[0] -= deltaPos[0]; movedPos[1] -= deltaPos[1];
+    antPos = [posX, posY];
+}
+
 onmousemove = function(e) {
     if (mouseDown && !controlDown && !shiftDown) {
-        deltaPos = [(antPos[0]-e.clientX)/sensitivity, (antPos[1]-e.clientY)/sensitivity];
-        movedPos[0] -= deltaPos[0]; movedPos[1] -= deltaPos[1];
-        antPos = [e.clientX, e.clientY];
+        cameraMove2Pos(e.clientX, e.clientY);
     }
 }
 
@@ -160,7 +165,19 @@ document.addEventListener("keydown", function(e) {
         shiftDown = false;
         noiseYellow = false;
         noiseBlue = false;
-    }
+    } else if (e.code == "KeyH" && !hidden) {
+        hiddenOnlyColor = true;
+        hiddenAll = false;
+        hidden = hiddenOnlyColor || hiddenAll;
+    } else if (e.code == "KeyH" && hiddenOnlyColor && !hiddenAll) {
+        hiddenOnlyColor = false;
+        hiddenAll = true;
+        hidden = hiddenOnlyColor || hiddenAll;
+    } else if (e.code == "KeyH" && !hiddenOnlyColor && hiddenAll) {
+        hiddenOnlyColor = false;
+        hiddenAll = false;
+        hidden = hiddenOnlyColor || hiddenAll;
+    } 
     
     if (controlDown && bluepathPoints.length > 0 && e.code == "Backspace") {
         bluepathPoints.pop();
