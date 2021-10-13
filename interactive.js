@@ -18,6 +18,11 @@ function reloadPage(ms=0) {
     }, ms);
 }
 
+function playSound(soundname) {
+    var audio = new Audio(soundname);
+    audio.play();
+}
+
 function downloadTLs(filename) {
     var text = "";
     for (var i = 0; i < yellowpathPoints.length; ++i) text += yellowpathPoints[i][0] + " " + -yellowpathPoints[i][1] + " ";
@@ -177,7 +182,9 @@ document.addEventListener("keydown", function(e) {
         hiddenOnlyColor = false;
         hiddenAll = false;
         hidden = hiddenOnlyColor || hiddenAll;
-    } 
+    } else if (e.code == "KeyI") {
+        playSound("extra/posatacos.mp3");
+    }
     
     if (controlDown && bluepathPoints.length > 0 && e.code == "Backspace") {
         bluepathPoints.pop();
